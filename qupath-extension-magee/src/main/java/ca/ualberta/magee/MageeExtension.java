@@ -1,5 +1,7 @@
 package ca.ualberta.magee;
-
+import java.util.List;
+import javafx.scene.Node;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -64,7 +66,29 @@ public class MageeExtension implements QuPathExtension {
         Button btnMagee = toolbarButton("Magee equation calculator", PathIcons.MEASURE);
         btnMagee.setOnAction(e -> MageeTools.showMageeCalculator(qupath));
 
-        toolbar.getItems().addAll(new Separator(), btnExport, btnImport, btnMagee);
+        var items = toolbar.getItems();
+        int insertAt = indexAfterSelectionModeGroup(items);
+        if (insertAt < 0) {
+            // Unexpected toolbar layout (e.g. a different QuPath version): fall back to the far right
+            items.addAll(new Separator(), btnExport, btnImport, btnMagee);
+            return;
+        }
+        items.addAll(insertAt, List.of(btnExport, btnImport, btnMagee, new Separator()));
+    }
+
+    /**
+     * QuPath's toolbar is laid out as:
+     *   [analysis pane] | [drawing tools] | [selection mode] | [brightness/contrast] | ...
+     * so the index just after the third separator is where our group goes.
+     * Returns -1 if the layout isn't recognised.
+     */
+    private static int indexAfterSelectionModeGroup(List<Node> items) {
+        int separators = 0;
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i) instanceof Separator && ++separators == 3)
+                return i + 1;
+        }
+        return -1;
     }
 
     private static Button toolbarButton(String tooltip, PathIcons icon) {
