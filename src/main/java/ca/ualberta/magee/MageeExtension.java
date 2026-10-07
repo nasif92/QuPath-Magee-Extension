@@ -1,6 +1,7 @@
 package ca.ualberta.magee;
+
 import java.util.List;
-import javafx.scene.Node;
+
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
@@ -73,6 +74,7 @@ public class MageeExtension implements QuPathExtension {
             items.addAll(new Separator(), btnExport, btnImport, btnMagee);
             return;
         }
+        // Lands as: [drawing tools] | [selection mode] | [our buttons] | [brightness/contrast] ...
         items.addAll(insertAt, List.of(btnExport, btnImport, btnMagee, new Separator()));
     }
 
